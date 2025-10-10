@@ -1,11 +1,13 @@
 package com.pluralsight;
 
 import java.io.*;
+import java.sql.SQLDataException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -18,10 +20,6 @@ import java.util.Scanner;
  * as a negative amount.
  */
 public class FinancialTracker {
-
-    /* ------------------------------------------------------------------
-       Shared data and formatters
-       ------------------------------------------------------------------ */
     private static final ArrayList<Transaction> transactions = new ArrayList<>();
     private static final String FILE_NAME = "transactions.csv";
     private static final String DATE_PATTERN = "yyyy-MM-dd";
@@ -32,9 +30,6 @@ public class FinancialTracker {
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern(TIME_PATTERN);
     private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern(DATETIME_PATTERN);
 
-    /* ------------------------------------------------------------------
-       Main menu
-       ------------------------------------------------------------------ */
     public static void main(String[] args) {
         loadTransactions(FILE_NAME);
         Scanner scanner = new Scanner(System.in);
@@ -61,14 +56,13 @@ public class FinancialTracker {
         scanner.close();
     }
 
-    /* ------------------------------------------------------------------
-       File I/O
-       ------------------------------------------------------------------ */
 
     /**
      * Load transactions from FILE_NAME.
      * • If the file doesn’t exist, create an empty one so that future writes succeed.
      * • Each line looks like: date|time|description|vendor|amount
+     * • If line is empty or line doesn't have all values skip and print error
+     * • Checks if date and time are in correct format
      */
     public static void loadTransactions(String fileName) {
         File file = new File(fileName);
@@ -98,8 +92,8 @@ public class FinancialTracker {
                         String vendor = token[3];
                         double amount = Double.parseDouble(token[4]);
                         transactions.add(new Transaction(date.toString(), time.toString(), description, vendor, amount));
-                    } catch(DateTimeException e){
-                        System.err.println("Invalid Date or time at line "+lineNumber);
+                    } catch (DateTimeException e) {
+                        System.err.println("Invalid Date or time at line " + lineNumber);
                     } catch (NumberFormatException e) {
                         System.err.printf("At line %d, invalid input for amount\n", lineNumber);
                     }
@@ -116,8 +110,47 @@ public class FinancialTracker {
      * Validate that the amount entered is positive.
      * Store the amount as-is (positive) and append to the file.
      */
-    private static void addDeposit(Scanner scanner) {
-        // TODO
+    private static void addDeposit(Scanner scan) {
+        boolean correctInput=false;
+        while (!correctInput) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+                System.out.println("Please enter the date for the transaction: (" + DATE_PATTERN + ")");
+                LocalDate parsedDate = LocalDate.parse(scan.nextLine().trim(), DATE_FMT);
+                System.out.println("Please enter the time for the transaction: (" + TIME_PATTERN + ")");
+                LocalTime parsedTime = LocalTime.parse(scan.nextLine().trim(), TIME_FMT);
+                System.out.println("Enter Description: ");
+                String description = scan.nextLine().trim();
+                System.out.println("Enter Vendor");
+                String vendor = scan.nextLine().trim();
+                double amount;
+                while (true) {
+                    System.out.println("Enter amount: ");
+                    amount = scan.nextDouble();
+                    scan.nextLine();
+                    if (amount > 0) {
+                        break;
+                    } else {
+                        System.out.println("Amount is not positive. Please enter a positive amount");
+                    }
+                }
+                transactions.add(new Transaction(parsedDate.toString(), parsedTime.toString(), description, vendor, amount));
+                writer.write(parsedDate.toString() + "|");
+                writer.write(parsedTime.toString() + "|");
+                writer.write(description + "|");
+                writer.write(vendor + "|");
+                writer.write(Double.toString(amount));
+                writer.newLine();
+                System.out.println("Successfully Saved Deposit");
+                correctInput=true;
+            } catch (DateTimeException e) {
+                System.err.println("Invalid Input For date or time. Please follow correct format");
+            } catch (NumberFormatException e) {
+                System.err.println("Please enter a number for amount ");
+            } catch (Exception e) {
+                System.err.println("Unable to open file");
+                break;
+            }
+        }
     }
 
     /**
@@ -212,16 +245,5 @@ public class FinancialTracker {
         //        vendor, and exact amount, then display matches
     }
 
-    /* ------------------------------------------------------------------
-       Utility parsers (you can reuse in many places)
-       ------------------------------------------------------------------ */
-    private static LocalDate parseDate(String s) {
-        /* TODO – return LocalDate or null */
-        return null;
-    }
 
-    private static Double parseDouble(String s) {
-        /* TODO – return Double   or null */
-        return null;
-    }
 }
