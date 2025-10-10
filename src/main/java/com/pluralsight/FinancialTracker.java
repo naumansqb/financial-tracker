@@ -1,14 +1,12 @@
 package com.pluralsight;
 
 import java.io.*;
-import java.sql.SQLDataException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /*
@@ -30,7 +28,7 @@ public class FinancialTracker {
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern(TIME_PATTERN);
     private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern(DATETIME_PATTERN);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         loadTransactions(FILE_NAME);
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -60,49 +58,38 @@ public class FinancialTracker {
     /**
      * Load transactions from FILE_NAME.
      * • If the file doesn’t exist, create an empty one so that future writes succeed.
+     *          - Exit method right away!
      * • Each line looks like: date|time|description|vendor|amount
-     * • If line is empty or line doesn't have all values skip and print error
-     * • Checks if date and time are in correct format
      */
-    public static void loadTransactions(String fileName) {
+    public static void loadTransactions(String fileName) throws IOException {
         File file = new File(fileName);
-        try {
             if (!file.exists()) {
                 file.createNewFile();
                 System.out.println("Created new file: " + fileName);
+                return;
             }
-            try (BufferedReader reader = new BufferedReader(new FileReader(fileName));) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(fileName));
                 String line = "";
-                int lineNumber = 0;
                 while ((line = reader.readLine()) != null) {
-                    lineNumber++;
                     line = line.trim();
                     if (line.isEmpty()) {
                         continue;
                     }
                     String[] token = line.split("\\|");
-                    try {
-                        if (token.length != 5) {
-                            System.out.println("Error getting data from line: " + lineNumber);
-                            continue;
-                        }
-                        LocalDate date = LocalDate.parse(token[0], DATE_FMT);
-                        LocalTime time = LocalTime.parse(token[1], TIME_FMT);
-                        String description = token[2];
-                        String vendor = token[3];
-                        double amount = Double.parseDouble(token[4]);
-                        transactions.add(new Transaction(date.toString(), time.toString(), description, vendor, amount));
-                    } catch (DateTimeException e) {
-                        System.err.println("Invalid Date or time at line " + lineNumber);
-                    } catch (NumberFormatException e) {
-                        System.err.printf("At line %d, invalid input for amount\n", lineNumber);
-                    }
+                    LocalDate date = LocalDate.parse(token[0]);
+                    LocalTime time = LocalTime.parse(token[1]);
+                    String description = token[2];
+                    String vendor = token[3];
+                    double amount = Double.parseDouble(token[4]);
+                    transactions.add(new Transaction(date.toString(), time.toString(), description, vendor, amount));
                 }
+                reader.close();
+            } catch (Exception e) {
+                System.err.println("Error Opening File: " + fileName);
             }
-        } catch (Exception e) {
-            System.err.println("Error Opening File: " + fileName);
         }
-    }
+
 
     /**
      * Prompt for ONE date+time string in the format
@@ -111,47 +98,67 @@ public class FinancialTracker {
      * Store the amount as-is (positive) and append to the file.
      */
     private static void addDeposit(Scanner scan) {
-        boolean correctInput=false;
-        while (!correctInput) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+        LocalDate parsedDate = null;
+        do {
+            try{
                 System.out.println("Please enter the date for the transaction: (" + DATE_PATTERN + ")");
-                LocalDate parsedDate = LocalDate.parse(scan.nextLine().trim(), DATE_FMT);
-                System.out.println("Please enter the time for the transaction: (" + TIME_PATTERN + ")");
-                LocalTime parsedTime = LocalTime.parse(scan.nextLine().trim(), TIME_FMT);
-                System.out.println("Enter Description: ");
-                String description = scan.nextLine().trim();
-                System.out.println("Enter Vendor");
-                String vendor = scan.nextLine().trim();
-                double amount;
-                while (true) {
-                    System.out.println("Enter amount: ");
-                    amount = scan.nextDouble();
-                    scan.nextLine();
-                    if (amount > 0) {
-                        break;
-                    } else {
-                        System.out.println("Amount is not positive. Please enter a positive amount");
-                    }
-                }
-                transactions.add(new Transaction(parsedDate.toString(), parsedTime.toString(), description, vendor, amount));
-                writer.write(parsedDate.toString() + "|");
-                writer.write(parsedTime.toString() + "|");
-                writer.write(description + "|");
-                writer.write(vendor + "|");
-                writer.write(Double.toString(amount));
-                writer.newLine();
-                System.out.println("Successfully Saved Deposit");
-                correctInput=true;
-            } catch (DateTimeException e) {
-                System.err.println("Invalid Input For date or time. Please follow correct format");
-            } catch (NumberFormatException e) {
-                System.err.println("Please enter a number for amount ");
-            } catch (Exception e) {
-                System.err.println("Unable to open file");
-                break;
+                parsedDate = LocalDate.parse(scan.nextLine(),DATE_FMT);
+            }catch(DateTimeException e){
+                System.out.println("Incorrect Input For Date! \n");
             }
+        } while (parsedDate == null);
+
+        LocalTime parsedTime = null;
+        do {
+            try {
+                System.out.println("Please enter the time for the transaction: (" + TIME_PATTERN + ")");
+                parsedTime = LocalTime.parse(scan.nextLine(),TIME_FMT);
+            } catch (DateTimeException e) {
+                System.err.println("Please input date based on format\n");
+            }
+        }while(parsedTime==null);
+
+        String description = "";
+        do {
+            System.out.println("Enter Description: (Must be filled in)");
+            description = scan.nextLine().trim();
+        }while(description.isEmpty());
+
+        String vendor = "";
+        do {
+            System.out.println("Enter Vendor: (Must be filled in) ");
+            vendor = scan.nextLine().trim();
+        }while(vendor.isEmpty());
+        double amount = 0;
+        do{
+            try{
+                System.out.println("Enter amount: (Must be greater than 0) ");
+                amount = scan.nextDouble();
+                scan.nextLine();
+            }catch(InputMismatchException e){
+                System.out.println("Invalid entry. Please enter a numerical input");
+                scan.nextLine();
+
+            }
+        }while(amount <=0);
+
+        transactions.add(new Transaction(parsedDate.toString(), parsedTime.toString(), description, vendor, amount));
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true));
+            writer.write(parsedDate + "|");
+            writer.write(parsedTime + "|");
+            writer.write(description + "|");
+            writer.write(vendor + "|");
+            writer.write(Double.toString(amount));
+            writer.newLine();
+            System.out.println("Successfully Saved Deposit");
+            writer.close();
+        } catch (Exception e) {
+            System.err.println("Error writing to file");
         }
+
     }
+
 
     /**
      * Same prompts as addDeposit.
@@ -244,6 +251,18 @@ public class FinancialTracker {
         // TODO – prompt for any combination of date range, description,
         //        vendor, and exact amount, then display matches
     }
+    //for csutom search
+/*
+    private static LocalDate parseDate(String s) {
+
+    }
+
+    private static LocalTime parseTime(String s) {
+    }
+
+    private static Double parseDouble(String s) {
+    }
+*/
 
 
 }
