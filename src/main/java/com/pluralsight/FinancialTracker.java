@@ -56,37 +56,37 @@ public class FinancialTracker {
     /**
      * Load transactions from FILE_NAME.
      * • If the file doesn’t exist, create an empty one so that future writes succeed.
-     *          - Exit method right away!
+     * - Exit method right away!
      * • Each line looks like: date|time|description|vendor|amount
      */
     public static void loadTransactions(String fileName) throws IOException {
         File file = new File(fileName);
-            if (!file.exists()) {
-                file.createNewFile();
-                //System.out.println("Created new file: " + fileName);
-                return;
-            }
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(fileName));
-                String line = "";
-                while ((line = reader.readLine()) != null) {
-                    line = line.trim();
-                    if (line.isEmpty()) {
-                        continue;
-                    }
-                    String[] token = line.split("\\|");
-                    LocalDate date = LocalDate.parse(token[0]);
-                    LocalTime time = LocalTime.parse(token[1]);
-                    String description = token[2];
-                    String vendor = token[3];
-                    double amount = Double.parseDouble(token[4]);
-                    transactions.add(new Transaction(date, time, description, vendor, amount));
-                }
-                reader.close();
-            } catch (Exception e) {
-                System.err.println("Error Opening File: " + fileName);
-            }
+        if (!file.exists()) {
+            file.createNewFile();
+            //System.out.println("Created new file: " + fileName);
+            return;
         }
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+                String[] token = line.split("\\|");
+                LocalDate date = LocalDate.parse(token[0]);
+                LocalTime time = LocalTime.parse(token[1]);
+                String description = token[2];
+                String vendor = token[3];
+                double amount = Double.parseDouble(token[4]);
+                transactions.add(new Transaction(date, time, description, vendor, amount));
+            }
+            reader.close();
+        } catch (Exception e) {
+            System.err.println("Error Opening File: " + fileName);
+        }
+    }
 
 
     /**
@@ -98,49 +98,49 @@ public class FinancialTracker {
     private static void addDeposit(Scanner scan) {
         LocalDate parsedDate = null;
         do {
-            try{
+            try {
                 System.out.println("Please enter the date for the transaction: (" + DATE_PATTERN + ")");
-                parsedDate = LocalDate.parse(scan.nextLine(),DATE_FMT);
-            }catch(DateTimeException e){
+                parsedDate = LocalDate.parse(scan.nextLine(), DATE_FMT);
+            } catch (DateTimeException e) {
                 System.out.println("Incorrect Input For Date! \n");
             }
-        } while (parsedDate == null);
+        } while (parsedDate==null);
 
         LocalTime parsedTime = null;
         do {
             try {
                 System.out.println("Please enter the time for the transaction: (" + TIME_PATTERN + ")");
-                parsedTime = LocalTime.parse(scan.nextLine(),TIME_FMT);
+                parsedTime = LocalTime.parse(scan.nextLine(), TIME_FMT);
             } catch (DateTimeException e) {
                 System.out.println("Please input date based on format\n");
             }
-        }while(parsedTime==null);
+        } while (parsedTime == null);
 
         String description = "";
         do {
             System.out.println("Enter Description: (Must be filled in)");
             description = scan.nextLine().trim();
-        }while(description.isEmpty());
+        } while (description.isEmpty());
 
         String vendor = "";
         do {
             System.out.println("Enter Vendor: (Must be filled in) ");
             vendor = scan.nextLine().trim();
-        }while(vendor.isEmpty());
+        } while (vendor.isEmpty());
         double amount = 0;
-        do{
-            try{
+        do {
+            try {
                 System.out.println("Enter amount: (Must be greater than 0) ");
                 amount = scan.nextDouble();
                 scan.nextLine();
-            }catch(InputMismatchException e){
+            } catch (InputMismatchException e) {
                 System.out.println("Invalid entry. Please enter a numerical input");
                 scan.nextLine();
 
             }
-        }while(amount <=0);
+        } while (amount <= 0);
 
-        transactions.add(new Transaction(parsedDate, parsedTime,description, vendor, amount));
+        transactions.add(new Transaction(parsedDate, parsedTime, description, vendor, amount));
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true));
             writer.write(parsedDate + "|");
@@ -166,10 +166,10 @@ public class FinancialTracker {
     private static void addPayment(Scanner scan) {
         LocalDate parsedDate = null;
         do {
-            try{
+            try {
                 System.out.println("Please enter the date for the transaction: (" + DATE_PATTERN + ")");
-                parsedDate = LocalDate.parse(scan.nextLine(),DATE_FMT);
-            }catch(DateTimeException e){
+                parsedDate = LocalDate.parse(scan.nextLine(), DATE_FMT);
+            } catch (DateTimeException e) {
                 System.out.println("Incorrect Input For Date! \n");
             }
         } while (parsedDate == null);
@@ -178,37 +178,36 @@ public class FinancialTracker {
         do {
             try {
                 System.out.println("Please enter the time for the transaction: (" + TIME_PATTERN + ")");
-                parsedTime = LocalTime.parse(scan.nextLine(),TIME_FMT);
+                parsedTime = LocalTime.parse(scan.nextLine(), TIME_FMT);
             } catch (DateTimeException e) {
                 System.out.println("Please input date based on format\n");
             }
-        }while(parsedTime==null);
+        } while (parsedTime == null);
 
         String description = "";
         do {
             System.out.println("Enter Description: (Must be filled in)");
             description = scan.nextLine().trim();
-        }while(description.isEmpty());
+        } while (description.isEmpty());
 
         String vendor = "";
         do {
             System.out.println("Enter Vendor: (Must be filled in) ");
             vendor = scan.nextLine().trim();
-        }while(vendor.isEmpty());
+        } while (vendor.isEmpty());
         double amount = 0;
-        do{
-            try{
+        do {
+            try {
                 System.out.println("Enter amount: (Must be greater than 0) ");
                 amount = scan.nextDouble();
                 scan.nextLine();
-            }catch(InputMismatchException e){
+            } catch (InputMismatchException e) {
                 System.out.println("Invalid entry. Please enter a numerical input");
                 scan.nextLine();
             }
-        }while(amount <=0);
-        amount=-amount;
-        System.out.println(amount);
-        transactions.add(new Transaction(parsedDate, parsedTime,description, vendor, amount));
+        } while (amount <= 0);
+        amount = -amount;
+        transactions.add(new Transaction(parsedDate, parsedTime, description, vendor, amount));
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true));
             writer.write(parsedDate + "|");
@@ -229,6 +228,11 @@ public class FinancialTracker {
        ------------------------------------------------------------------ */
     private static void ledgerMenu(Scanner scanner) {
         boolean running = true;
+        transactions.sort(Comparator.comparing(Transaction::getDate, Comparator.reverseOrder()).thenComparing(Transaction::getTime,Comparator.reverseOrder()));
+        if (transactions.isEmpty()) {
+            System.out.println("No entries to display. You must add a transaction first.");
+            return;
+        }
         while (running) {
             System.out.println("Ledger");
             System.out.println("Choose an option:");
@@ -254,16 +258,55 @@ public class FinancialTracker {
        Display helpers: show data in neat columns
        ------------------------------------------------------------------ */
     private static void displayLedger() {
+            System.out.println("Displaying All Entries");
+            System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
+            for (Transaction transaction : transactions) {
+                System.out.println(transaction);
+            }
+    }
+
+    private static void displayDeposits() {
+        boolean found=false;
+        for (Transaction t : transactions) {
+            if (t.getAmount() > 0) {
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            System.out.println("No Deposits Found");
+            return;
+        }
+        System.out.println("Displaying Deposits: ");
         System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
-        transactions.sort(Comparator.comparing(Transaction::getDate,Comparator.reverseOrder()));
-        for(Transaction transaction: transactions){
-            System.out.println(transaction);
+        for (Transaction t : transactions) {
+            if (t.getAmount() > 0) {
+                System.out.println(t);
+            }
         }
     }
 
-    private static void displayDeposits() { /* TODO – only amount > 0               */ }
 
-    private static void displayPayments() { /* TODO – only amount < 0               */ }
+    private static void displayPayments() {
+        boolean found=false;
+        for (Transaction t : transactions) {
+            if (t.getAmount() < 0) {
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            System.out.println("No Payments Found");
+            return;
+        }
+        System.out.println("Displaying Payments: ");
+        System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
+        for (Transaction t : transactions) {
+            if (t.getAmount() < 0) {
+                System.out.println(t);
+            }
+        }
+    }
 
     /* ------------------------------------------------------------------
        Reports menu
