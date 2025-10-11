@@ -5,9 +5,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 /*
  * Capstone skeleton – personal finance tracker.
@@ -255,7 +253,13 @@ public class FinancialTracker {
     /* ------------------------------------------------------------------
        Display helpers: show data in neat columns
        ------------------------------------------------------------------ */
-    private static void displayLedger() { /* TODO – print all transactions in column format */ }
+    private static void displayLedger() {
+        System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
+        transactions.sort(Comparator.comparing(Transaction::getDate,Comparator.reverseOrder()));
+        for(Transaction transaction: transactions){
+            System.out.println(transaction);
+        }
+    }
 
     private static void displayDeposits() { /* TODO – only amount > 0               */ }
 
