@@ -60,13 +60,14 @@ public class Transaction{
         this.amount = amount;
     }
 
-    //add any action methods below here. helper methods.
-    //------------------------------------------------
 
     @Override
     public String toString() {
-        return String.format("\t%-12s %-10s %-30s %-25s $%,.2f",
-                date, time, description, vendor, amount);
+        return String.format(
+                "\t%-12s | %-10s | %-30s | %-25s | $%,.2f",
+                date, time, description, vendor, amount
+        );
     }
+
 
 }

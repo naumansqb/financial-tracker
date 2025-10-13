@@ -7,14 +7,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-/*
- * Capstone skeleton – personal finance tracker.
- * ------------------------------------------------
- * File format  (pipe-delimited)
- *     yyyy-MM-dd|HH:mm:ss|description|vendor|amount
- * A deposit has a positive amount; a payment is stored
- * as a negative amount.
- */
 public class FinancialTracker {
     private static final ArrayList<Transaction> transactions = new ArrayList<>();
     private static final String FILE_NAME = "transactions.csv";
@@ -61,14 +53,19 @@ public class FinancialTracker {
      */
     public static void loadTransactions(String fileName) throws IOException {
         File file = new File(fileName);
-        if (!file.exists()) {
-            file.createNewFile();
-            //System.out.println("Created new file: " + fileName);
+        try{
+            if (!file.exists()) {
+                file.createNewFile();
+                //System.out.println("Created new file: " + fileName);
+                return;
+            }
+        }catch(Exception e){
+            System.out.println("Error occurred creating a new file. Please try later:)");
             return;
         }
         try {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
-            String line = "";
+            String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 if (line.isEmpty()) {
@@ -116,13 +113,13 @@ public class FinancialTracker {
             }
         } while (parsedTime == null);
 
-        String description = "";
+        String description;
         do {
             System.out.println("Enter Description: (Must be filled in)");
             description = scan.nextLine().trim();
         } while (description.isEmpty());
 
-        String vendor = "";
+        String vendor;
         do {
             System.out.println("Enter Vendor: (Must be filled in) ");
             vendor = scan.nextLine().trim();
@@ -156,8 +153,6 @@ public class FinancialTracker {
         }
 
     }
-
-
     /**
      * Same prompts as addDeposit.
      * Amount must be entered as a positive number,
@@ -184,13 +179,13 @@ public class FinancialTracker {
             }
         } while (parsedTime == null);
 
-        String description = "";
+        String description;
         do {
             System.out.println("Enter Description: (Must be filled in)");
             description = scan.nextLine().trim();
         } while (description.isEmpty());
 
-        String vendor = "";
+        String vendor;
         do {
             System.out.println("Enter Vendor: (Must be filled in) ");
             vendor = scan.nextLine().trim();
@@ -222,10 +217,6 @@ public class FinancialTracker {
             System.err.println("Error writing to file");
         }
     }
-
-    /* ------------------------------------------------------------------
-       Ledger menu
-       ------------------------------------------------------------------ */
     private static void ledgerMenu(Scanner scanner) {
         boolean running = true;
         transactions.sort(Comparator.comparing(Transaction::getDate, Comparator.reverseOrder()).thenComparing(Transaction::getTime,Comparator.reverseOrder()));
@@ -254,12 +245,20 @@ public class FinancialTracker {
         }
     }
 
-    /* ------------------------------------------------------------------
-       Display helpers: show data in neat columns
-       ------------------------------------------------------------------ */
+    /**
+     - USes consistent format across all ledger reports
+     */
+    private static void displayHeader(){
+        System.out.format(
+                "\t%-12s | %-10s | %-30s | %-25s | %s\n",
+                "Date", "Time", "Description", "Vendor", "Amount"
+        );
+        System.out.println("\t------------------------------------------------------------------------------------------------------");
+    }
+
     private static void displayLedger() {
             System.out.println("Displaying All Entries");
-            System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
+            displayHeader();
             for (Transaction transaction : transactions) {
                 System.out.println(transaction);
             }
@@ -278,7 +277,7 @@ public class FinancialTracker {
             return;
         }
         System.out.println("Displaying Deposits: ");
-        System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
+        displayHeader();
         for (Transaction t : transactions) {
             if (t.getAmount() > 0) {
                 System.out.println(t);
@@ -300,7 +299,7 @@ public class FinancialTracker {
             return;
         }
         System.out.println("Displaying Payments: ");
-        System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
+        displayHeader();
         for (Transaction t : transactions) {
             if (t.getAmount() < 0) {
                 System.out.println(t);
@@ -308,9 +307,7 @@ public class FinancialTracker {
         }
     }
 
-    /* ------------------------------------------------------------------
-       Reports menu
-       ------------------------------------------------------------------ */
+
     private static void reportsMenu(Scanner scanner) {
         boolean running = true;
         while (running) {
@@ -362,9 +359,6 @@ public class FinancialTracker {
         }
     }
 
-    /* ------------------------------------------------------------------
-       Reporting helpers
-       ------------------------------------------------------------------ */
     private static void filterTransactionsByDate(LocalDate start, LocalDate end,String title) {
         boolean found=false;
         int printStartingLine=0;
@@ -372,7 +366,7 @@ public class FinancialTracker {
             if(!t.getDate().isBefore(start) && !t.getDate().isAfter(end)){
                 if(printStartingLine==0){
                     System.out.println( "Displaying "+title+" Entries:");
-                    System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
+                    displayHeader();
                     printStartingLine++;
                 }
                 System.out.println(t);
@@ -391,6 +385,7 @@ public class FinancialTracker {
             if(t.getVendor().equalsIgnoreCase(vendor)){
                 if(printStartingLine==0){
                     System.out.printf("Displaying Entries From Vendor '%s':\n",vendor);
+                    displayHeader();
                     printStartingLine++;
                 }
                 System.out.println(t);
