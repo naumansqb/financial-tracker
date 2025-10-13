@@ -328,10 +328,14 @@ public class FinancialTracker {
 
             switch (input) {
                 case "1" -> {
+                    String title="Displaying Month To Date Entries:\n ";
                     LocalDate start= LocalDate.now().withDayOfMonth(1);
                     LocalDate end=LocalDate.now();
-                    filterTransactionsByDate(start,end); }
+                    filterTransactionsByDate(start,end,title); }
                 case "2" -> {/* TODO – previous month report */
+//                    LocalDate end = LocalDate.now().withDayOfMonth(1).minusDays(1);
+//                    LocalDate start = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+//                    filterTransactionsByDate(start,end);
                 }
                 case "3" -> {/* TODO – year-to-date report   */ }
                 case "4" -> {/* TODO – previous year report  */ }
@@ -346,12 +350,22 @@ public class FinancialTracker {
     /* ------------------------------------------------------------------
        Reporting helpers
        ------------------------------------------------------------------ */
-    private static void filterTransactionsByDate(LocalDate start, LocalDate end) {
-        // TODO – iterate transactions, print those within the range
+    private static void filterTransactionsByDate(LocalDate start, LocalDate end,String title) {
+        boolean found=false;
+        int printStartingLine=0;
         for(Transaction t: transactions){
             if(!t.getDate().isBefore(start) && !t.getDate().isAfter(end)){
+                printStartingLine++;
+                if(printStartingLine==1){
+                    System.out.println( title);
+                    System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
+                }
                 System.out.println(t);
+                found=true;
             }
+        }
+        if(!found){
+            System.out.println("No entries to display for that range");
         }
     }
 
