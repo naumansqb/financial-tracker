@@ -72,6 +72,9 @@ public class FinancialTracker {
                     continue;
                 }
                 String[] token = line.split("\\|");
+                if (token.length != 5) {
+                    continue;
+                }
                 LocalDate date = LocalDate.parse(token[0]);
                 LocalTime time = LocalTime.parse(token[1]);
                 String description = token[2];
@@ -109,7 +112,7 @@ public class FinancialTracker {
                 System.out.println("Please enter the time for the transaction: (" + TIME_PATTERN + ")");
                 parsedTime = LocalTime.parse(scan.nextLine(), TIME_FMT);
             } catch (DateTimeException e) {
-                System.out.println("Please input date based on format\n");
+                System.out.println("Please input time based on format\n");
             }
         } while (parsedTime == null);
 
@@ -175,7 +178,7 @@ public class FinancialTracker {
                 System.out.println("Please enter the time for the transaction: (" + TIME_PATTERN + ")");
                 parsedTime = LocalTime.parse(scan.nextLine(), TIME_FMT);
             } catch (DateTimeException e) {
-                System.out.println("Please input date based on format\n");
+                System.out.println("Please input time based on format\n");
             }
         } while (parsedTime == null);
 
@@ -249,6 +252,7 @@ public class FinancialTracker {
      - USes consistent format across all ledger reports
      */
     private static void displayHeader(){
+        System.out.println("\t------------------------------------------------------------------------------------------------------");
         System.out.format(
                 "\t%-12s | %-10s | %-30s | %-25s | %s\n",
                 "Date", "Time", "Description", "Vendor", "Amount"
@@ -348,7 +352,7 @@ public class FinancialTracker {
                 }
                 case "5" -> {
                     System.out.println("Please enter the name of the vendor you would like to filter the entries by: ");
-                    String userInput=scanner.nextLine();
+                    String userInput=scanner.nextLine().trim();
                     filterTransactionsByVendor(userInput);
 
                 }
@@ -398,22 +402,36 @@ public class FinancialTracker {
 
     }
 
-    private static void customSearch(Scanner scanner) {
-        // TODO – prompt for any combination of date range, description,
-        //        vendor, and exact amount, then display matches
-    }
-    //for csutom search
-/*
+    private static void customSearch(Scanner scan) {
+        System.out.println("Enter values for the filters you'd like to apply.\n" +
+                "Press Enter to skip any filter.\n");
+        System.out.println("Starting Date: ");
+        LocalDate startingDate=parseDate(scan.nextLine());
+        System.out.println("Ending Date: ");
+        LocalDate endingDate= parseDate(scan.nextLine());
+        System.out.println("Description: ");
+        String description= scan.nextLine();
+        System.out.println("Vendor: ");
+        String Vendor= scan.nextLine();
+        System.out.println("Exact Amount");
+        double amount= scan.nextDouble();
+        }
+
     private static LocalDate parseDate(String s) {
-
-    }
-
-    private static LocalTime parseTime(String s) {
+        if(s.isEmpty()){
+            return null;
+        }
+        try {
+            return LocalDate.parse(s, DATE_FMT);
+        } catch (DateTimeException e) {
+            System.out.println("Invalid date \"" + s + "\". Skipping that filter.");
+            return null;
+        }
     }
 
     private static Double parseDouble(String s) {
+        return null;
     }
-*/
 
 
 }
