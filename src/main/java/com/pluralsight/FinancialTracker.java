@@ -328,18 +328,33 @@ public class FinancialTracker {
 
             switch (input) {
                 case "1" -> {
-                    String title="Displaying Month To Date Entries:\n ";
+                    String title="Month To Date";
                     LocalDate start= LocalDate.now().withDayOfMonth(1);
                     LocalDate end=LocalDate.now();
                     filterTransactionsByDate(start,end,title); }
-                case "2" -> {/* TODO – previous month report */
-//                    LocalDate end = LocalDate.now().withDayOfMonth(1).minusDays(1);
-//                    LocalDate start = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-//                    filterTransactionsByDate(start,end);
+                case "2" -> {
+                    String title="Previous Month";
+                    LocalDate end = LocalDate.now().withDayOfMonth(1).minusDays(1);
+                    LocalDate start = LocalDate.now().minusMonths(1).withDayOfMonth(1);
+                    filterTransactionsByDate(start,end,title);
                 }
-                case "3" -> {/* TODO – year-to-date report   */ }
-                case "4" -> {/* TODO – previous year report  */ }
-                case "5" -> {/* TODO – prompt for vendor then report */ }
+                case "3" -> {
+                    String title="Year To Date";
+                    LocalDate start = LocalDate.now().withDayOfYear(1);
+                    LocalDate end = LocalDate.now();
+                    filterTransactionsByDate(start,end,title);}
+                case "4" -> {
+                    String title="Previous Year";
+                    LocalDate start = LocalDate.now().minusYears(1).withDayOfYear(1);
+                    LocalDate end = LocalDate.now().withDayOfYear(1).minusDays(1);
+                    filterTransactionsByDate(start,end,title);
+                }
+                case "5" -> {
+                    System.out.println("Please enter the name of the vendor you would like to filter the entries by: ");
+                    String userInput=scanner.nextLine();
+                    filterTransactionsByVendor(userInput);
+
+                }
                 case "6" -> customSearch(scanner);
                 case "0" -> running = false;
                 default -> System.out.println("Invalid option");
@@ -355,22 +370,37 @@ public class FinancialTracker {
         int printStartingLine=0;
         for(Transaction t: transactions){
             if(!t.getDate().isBefore(start) && !t.getDate().isAfter(end)){
-                printStartingLine++;
-                if(printStartingLine==1){
-                    System.out.println( title);
+                if(printStartingLine==0){
+                    System.out.println( "Displaying "+title+" Entries:");
                     System.out.format("\t%-12s %-10s %-30s %-25s %s\n", "Date", "Time", "Description", "Vendor", "Amount");
+                    printStartingLine++;
                 }
                 System.out.println(t);
                 found=true;
             }
         }
         if(!found){
-            System.out.println("No entries to display for that range");
+            System.out.println("No entries to display for "+title);
         }
     }
 
     private static void filterTransactionsByVendor(String vendor) {
-        // TODO – iterate transactions, print those with matching vendor
+        boolean found=false;
+        int printStartingLine=0;
+        for(Transaction t: transactions){
+            if(t.getVendor().equalsIgnoreCase(vendor)){
+                if(printStartingLine==0){
+                    System.out.printf("Displaying Entries From Vendor '%s':\n",vendor);
+                    printStartingLine++;
+                }
+                System.out.println(t);
+                found=true;
+            }
+        }
+        if(!found){
+            System.out.printf("No entries to display for vendor: '%s'\n",vendor);
+        }
+
     }
 
     private static void customSearch(Scanner scanner) {
