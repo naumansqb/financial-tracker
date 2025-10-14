@@ -418,6 +418,32 @@ public class FinancialTracker {
         String vendor = scan.nextLine().trim();
         System.out.println("Exact Amount");
         Double amount = parseDouble(scan.nextLine().trim());
+        boolean noFilters = startingDate == null && endingDate == null && description.isEmpty() && vendor.isEmpty() && amount == null;
+
+        if (noFilters) {
+            System.out.println("No filters applied — nothing to display.");
+            return;
+        }
+        boolean found=false;
+        boolean printHeader=true;
+        for (Transaction t : transactions) {
+            if ((startingDate == null || !t.getDate().isBefore(startingDate)) &&
+                    (endingDate == null || !t.getDate().isAfter(endingDate)) &&
+                    (description.isEmpty()||t.getDescription().toLowerCase().contains(description)) &&
+                    (vendor.isEmpty()||t.getVendor().toLowerCase().contains(description)) &&
+                    (amount == null || amount == t.getAmount())) {
+                if(printHeader) {
+                    printHeader=false;
+                    displayHeader();
+                }
+                found=true;
+                System.out.println(t);
+            }
+        }
+        if(!found){
+            System.out.println("No entries match the custom search");
+        }
+
     }
 
 
