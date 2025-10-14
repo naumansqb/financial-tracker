@@ -44,22 +44,21 @@ public class FinancialTracker {
         scanner.close();
     }
 
-
     /**
      * Load transactions from FILE_NAME.
      * • If the file doesn’t exist, create an empty one so that future writes succeed.
      * - Exit method right away!
      * • Each line looks like: date|time|description|vendor|amount
      */
-    public static void loadTransactions(String fileName) throws IOException {
+    public static void loadTransactions(String fileName) {
         File file = new File(fileName);
-        try{
+        try {
             if (!file.exists()) {
                 file.createNewFile();
                 //System.out.println("Created new file: " + fileName);
                 return;
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println("Error occurred creating a new file. Please try later:)");
             return;
         }
@@ -104,7 +103,7 @@ public class FinancialTracker {
             } catch (DateTimeException e) {
                 System.out.println("Incorrect Input For Date! \n");
             }
-        } while (parsedDate==null);
+        } while (parsedDate == null);
 
         LocalTime parsedTime = null;
         do {
@@ -156,6 +155,7 @@ public class FinancialTracker {
         }
 
     }
+
     /**
      * Same prompts as addDeposit.
      * Amount must be entered as a positive number,
@@ -220,9 +220,10 @@ public class FinancialTracker {
             System.err.println("Error writing to file");
         }
     }
+
     private static void ledgerMenu(Scanner scanner) {
         boolean running = true;
-        transactions.sort(Comparator.comparing(Transaction::getDate, Comparator.reverseOrder()).thenComparing(Transaction::getTime,Comparator.reverseOrder()));
+        transactions.sort(Comparator.comparing(Transaction::getDate, Comparator.reverseOrder()).thenComparing(Transaction::getTime, Comparator.reverseOrder()));
         if (transactions.isEmpty()) {
             System.out.println("No entries to display. You must add a transaction first.");
             return;
@@ -249,9 +250,9 @@ public class FinancialTracker {
     }
 
     /**
-     - USes consistent format across all ledger reports
+     * - USes consistent format across all ledger reports
      */
-    private static void displayHeader(){
+    private static void displayHeader() {
         System.out.println("\t------------------------------------------------------------------------------------------------------");
         System.out.format(
                 "\t%-12s | %-10s | %-30s | %-25s | %s\n",
@@ -261,22 +262,22 @@ public class FinancialTracker {
     }
 
     private static void displayLedger() {
-            System.out.println("Displaying All Entries");
-            displayHeader();
-            for (Transaction transaction : transactions) {
-                System.out.println(transaction);
-            }
+        System.out.println("Displaying All Entries");
+        displayHeader();
+        for (Transaction transaction : transactions) {
+            System.out.println(transaction);
+        }
     }
 
     private static void displayDeposits() {
-        boolean found=false;
+        boolean found = false;
         for (Transaction t : transactions) {
             if (t.getAmount() > 0) {
                 found = true;
                 break;
             }
         }
-        if(!found){
+        if (!found) {
             System.out.println("No Deposits Found");
             return;
         }
@@ -291,14 +292,14 @@ public class FinancialTracker {
 
 
     private static void displayPayments() {
-        boolean found=false;
+        boolean found = false;
         for (Transaction t : transactions) {
             if (t.getAmount() < 0) {
                 found = true;
                 break;
             }
         }
-        if(!found){
+        if (!found) {
             System.out.println("No Payments Found");
             return;
         }
@@ -329,30 +330,32 @@ public class FinancialTracker {
 
             switch (input) {
                 case "1" -> {
-                    String title="Month To Date";
-                    LocalDate start= LocalDate.now().withDayOfMonth(1);
-                    LocalDate end=LocalDate.now();
-                    filterTransactionsByDate(start,end,title); }
+                    String title = "Month To Date";
+                    LocalDate start = LocalDate.now().withDayOfMonth(1);
+                    LocalDate end = LocalDate.now();
+                    filterTransactionsByDate(start, end, title);
+                }
                 case "2" -> {
-                    String title="Previous Month";
+                    String title = "Previous Month";
                     LocalDate end = LocalDate.now().withDayOfMonth(1).minusDays(1);
                     LocalDate start = LocalDate.now().minusMonths(1).withDayOfMonth(1);
-                    filterTransactionsByDate(start,end,title);
+                    filterTransactionsByDate(start, end, title);
                 }
                 case "3" -> {
-                    String title="Year To Date";
+                    String title = "Year To Date";
                     LocalDate start = LocalDate.now().withDayOfYear(1);
                     LocalDate end = LocalDate.now();
-                    filterTransactionsByDate(start,end,title);}
+                    filterTransactionsByDate(start, end, title);
+                }
                 case "4" -> {
-                    String title="Previous Year";
+                    String title = "Previous Year";
                     LocalDate start = LocalDate.now().minusYears(1).withDayOfYear(1);
                     LocalDate end = LocalDate.now().withDayOfYear(1).minusDays(1);
-                    filterTransactionsByDate(start,end,title);
+                    filterTransactionsByDate(start, end, title);
                 }
                 case "5" -> {
                     System.out.println("Please enter the name of the vendor you would like to filter the entries by: ");
-                    String userInput=scanner.nextLine().trim();
+                    String userInput = scanner.nextLine().trim();
                     filterTransactionsByVendor(userInput);
 
                 }
@@ -363,41 +366,41 @@ public class FinancialTracker {
         }
     }
 
-    private static void filterTransactionsByDate(LocalDate start, LocalDate end,String title) {
-        boolean found=false;
-        int printStartingLine=0;
-        for(Transaction t: transactions){
-            if(!t.getDate().isBefore(start) && !t.getDate().isAfter(end)){
-                if(printStartingLine==0){
-                    System.out.println( "Displaying "+title+" Entries:");
+    private static void filterTransactionsByDate(LocalDate start, LocalDate end, String title) {
+        boolean found = false;
+        int printStartingLine = 0;
+        for (Transaction t : transactions) {
+            if (!t.getDate().isBefore(start) && !t.getDate().isAfter(end)) {
+                if (printStartingLine == 0) {
+                    System.out.println("Displaying " + title + " Entries:");
                     displayHeader();
                     printStartingLine++;
                 }
                 System.out.println(t);
-                found=true;
+                found = true;
             }
         }
-        if(!found){
-            System.out.println("No entries to display for "+title);
+        if (!found) {
+            System.out.println("No entries to display for " + title);
         }
     }
 
     private static void filterTransactionsByVendor(String vendor) {
-        boolean found=false;
-        int printStartingLine=0;
-        for(Transaction t: transactions){
-            if(t.getVendor().equalsIgnoreCase(vendor)){
-                if(printStartingLine==0){
-                    System.out.printf("Displaying Entries From Vendor '%s':\n",vendor);
+        boolean found = false;
+        int printStartingLine = 0;
+        for (Transaction t : transactions) {
+            if (t.getVendor().equalsIgnoreCase(vendor)) {
+                if (printStartingLine == 0) {
+                    System.out.printf("Displaying Entries From Vendor '%s':\n", vendor);
                     displayHeader();
                     printStartingLine++;
                 }
                 System.out.println(t);
-                found=true;
+                found = true;
             }
         }
-        if(!found){
-            System.out.printf("No entries to display for vendor: '%s'\n",vendor);
+        if (!found) {
+            System.out.printf("No entries to display for vendor: '%s'\n", vendor);
         }
 
     }
@@ -406,19 +409,20 @@ public class FinancialTracker {
         System.out.println("Enter values for the filters you'd like to apply.\n" +
                 "Press Enter to skip any filter.\n");
         System.out.println("Starting Date: ");
-        LocalDate startingDate=parseDate(scan.nextLine());
+        LocalDate startingDate = parseDate(scan.nextLine().trim());
         System.out.println("Ending Date: ");
-        LocalDate endingDate= parseDate(scan.nextLine());
+        LocalDate endingDate = parseDate(scan.nextLine().trim());
         System.out.println("Description: ");
-        String description= scan.nextLine();
+        String description = scan.nextLine().trim();
         System.out.println("Vendor: ");
-        String Vendor= scan.nextLine();
+        String vendor = scan.nextLine().trim();
         System.out.println("Exact Amount");
-        double amount= scan.nextDouble();
-        }
+        Double amount = parseDouble(scan.nextLine().trim());
+    }
+
 
     private static LocalDate parseDate(String s) {
-        if(s.isEmpty()){
+        if (s.isEmpty()) {
             return null;
         }
         try {
@@ -430,8 +434,14 @@ public class FinancialTracker {
     }
 
     private static Double parseDouble(String s) {
-        return null;
+        if (s.isEmpty()) {
+            return null;
+        }
+        try {
+            return Double.parseDouble(s);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid amount \"" + s + "\". Skipping filter.");
+            return null;
+        }
     }
-
-
 }
