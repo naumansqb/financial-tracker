@@ -1,19 +1,24 @@
-# Project Title
+# Transaction App
 
 ## Description of the Project
-
-Briefly describe what this Java console application does. Mention its purpose and who the intended users are. Explain the main functionality and what problems it aims to solve.
+This application allows you to get a good glance of all your transactions, while also allowing you to add any transaction you would like to. It also displays different reports in neat format.
 
 ## User Stories
-
-List the user stories that guided the development of your application. Format these stories as: "As a [type of user], I want [some goal] so that [some reason]."
-
-- As a user, I want to be able to input my data, so that the application can process it accordingly.
-- As a user, I want to receive immediate feedback, so I can understand what to do next.
+- As a user, I want to add my deposit transactions so I can track my deposits.
+- As a user, I want to add my payment transactions so I can track all payments I make.
+- As a user, I want to be able to see all my transactions so I can better manage my money and understand what I’m spending it on.
+- As a user I want to see only my deposits so I can better understand where my money is coming from.
+- As a user I want to see only my payments so I can better understand where I am spending my money.
+- As a user I want to see a report on my transactions from the current month to the current date so I can see my transactions for the month.
+- As a user I want to see a report on my transactions from the past month only so I can see my transactions for the previous month.
+- As a user, I want to see a report on my transactions from the previous year only so I can review my spending and income from last year.
+- As a user I want to see a report on my transactions from the current year to current date so I can better see my incoming and outgoing money for the year.
+- As a user, I want to search my transactions by vendor so I can view all payments or deposits from specific vendors.
+- As a user I want to create my own filter for a report so it’s more flexible than the predefined reports.
 
 ## Setup
 
-Instructions on how to set up and run the project using IntelliJ IDEA.
+Follow the instructions below and run the project using IntelliJ IDEA.
 
 ### Prerequisites
 
@@ -31,38 +36,22 @@ Follow these steps to get your application running within IntelliJ IDEA:
 5. Right-click on the file and select 'Run 'YourMainClassName.main()'' to start the application.
 
 ## Technologies Used
-
-- Java: Mention the version you are using.
-- Any additional libraries or frameworks used in the project.
-
+- Java: `openjdk 17.0.12 2024-07-16`
+- 
 ## Demo
+![HomeScreen](C:\Users\xnaum\Downloads\HomeScreen-ezgif.com-video-to-gif-converter.gif)
 
-Include screenshots or GIFs that show your application in action. Use tools like [Giphy Capture](https://giphy.com/apps/giphycapture) to record a GIF of your application.
-
-![Application Screenshot](path/to/your/screenshot.png)
 
 ## Future Work
 
 Outline potential future enhancements or functionalities you might consider adding:
 
-- Additional feature to be developed.
-- Improvement of current functionalities.
+- 
 
 ## Resources
+- [Java Date Examples](https://www.studytonight.com/java-examples/)
+- [Student Extra Resources Github](https://github.com/RayMaroun/students-extra-resources/blob/main/week3-payroll-tutorial.md)
 
-List resources such as tutorials, articles, or documentation that helped you during the project.
-
-- [Java Programming Tutorial](https://www.example.com)
-- [Effective Java](https://www.example.com)
-
-## Team Members
-
-- **Name 1** - Specific contributions or roles.
-- **Name 2** - Specific contributions or roles.
 
 ## Thanks
-
-Express gratitude towards those who provided help, guidance, or resources:
-
-- Thank you to [Mentor's Name] for continuous support and guidance.
-- A special thanks to all teammates for their dedication and teamwork.
+- Thank you to Raymond for continuous support and guidance.
