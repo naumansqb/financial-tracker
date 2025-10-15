@@ -18,7 +18,7 @@ public class FinancialTracker {
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern(TIME_PATTERN);
     private static final DateTimeFormatter DATETIME_FMT = DateTimeFormatter.ofPattern(DATETIME_PATTERN);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         loadTransactions(FILE_NAME);
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -37,7 +37,10 @@ public class FinancialTracker {
                 case "D" -> addDeposit(scanner);
                 case "P" -> addPayment(scanner);
                 case "L" -> ledgerMenu(scanner);
-                case "X" -> running = false;
+                case "X" -> {
+                    System.out.println("Exiting Application. Have a great day<3");
+                    running = false;
+                }
                 default -> System.out.println("Invalid option");
             }
         }
@@ -55,7 +58,6 @@ public class FinancialTracker {
         try {
             if (!file.exists()) {
                 file.createNewFile();
-                //System.out.println("Created new file: " + fileName);
                 return;
             }
         } catch (Exception e) {
@@ -95,6 +97,7 @@ public class FinancialTracker {
      * Store the amount as-is (positive) and append to the file.
      */
     private static void addDeposit(Scanner scan) {
+        System.out.println("All values must be filled in to save your deposit.");
         LocalDate parsedDate = null;
         do {
             try {
@@ -117,13 +120,13 @@ public class FinancialTracker {
 
         String description;
         do {
-            System.out.println("Enter Description: (Must be filled in)");
+            System.out.println("Enter Description:");
             description = scan.nextLine().trim();
         } while (description.isEmpty());
 
         String vendor;
         do {
-            System.out.println("Enter Vendor: (Must be filled in) ");
+            System.out.println("Enter Vendor:");
             vendor = scan.nextLine().trim();
         } while (vendor.isEmpty());
         double amount = 0;
@@ -162,6 +165,7 @@ public class FinancialTracker {
      * then converted to a negative amount before storing.
      */
     private static void addPayment(Scanner scan) {
+        System.out.println("All values must be filled in to save your payment.");
         LocalDate parsedDate = null;
         do {
             try {
@@ -224,10 +228,6 @@ public class FinancialTracker {
     private static void ledgerMenu(Scanner scanner) {
         boolean running = true;
         transactions.sort(Comparator.comparing(Transaction::getDate, Comparator.reverseOrder()).thenComparing(Transaction::getTime, Comparator.reverseOrder()));
-        if (transactions.isEmpty()) {
-            System.out.println("No entries to display. You must add a transaction first.");
-            return;
-        }
         while (running) {
             System.out.println("Ledger");
             System.out.println("Choose an option:");
@@ -254,7 +254,7 @@ public class FinancialTracker {
      */
     private static void displayHeader() {
         System.out.println("\t------------------------------------------------------------------------------------------------------");
-        System.out.format(
+        System.out.printf(
                 "\t%-12s | %-10s | %-30s | %-25s | %s\n",
                 "Date", "Time", "Description", "Vendor", "Amount"
         );
@@ -262,6 +262,10 @@ public class FinancialTracker {
     }
 
     private static void displayLedger() {
+        if(transactions.isEmpty()){
+            System.out.println("No Entries To Display. Please enter a deposit or payment before continuing.");
+            return;
+        }
         System.out.println("Displaying All Entries");
         displayHeader();
         for (Transaction transaction : transactions) {
@@ -289,8 +293,6 @@ public class FinancialTracker {
             }
         }
     }
-
-
     private static void displayPayments() {
         boolean found = false;
         for (Transaction t : transactions) {
@@ -311,8 +313,6 @@ public class FinancialTracker {
             }
         }
     }
-
-
     private static void reportsMenu(Scanner scanner) {
         boolean running = true;
         while (running) {
@@ -429,11 +429,12 @@ public class FinancialTracker {
         for (Transaction t : transactions) {
             if ((startingDate == null || !t.getDate().isBefore(startingDate)) &&
                     (endingDate == null || !t.getDate().isAfter(endingDate)) &&
-                    (description.isEmpty()||t.getDescription().toLowerCase().contains(description)) &&
-                    (vendor.isEmpty()||t.getVendor().toLowerCase().contains(description)) &&
+                    (description.isEmpty()||t.getDescription().equalsIgnoreCase(description)) &&
+                    (vendor.isEmpty()||t.getVendor().equalsIgnoreCase(vendor)) &&
                     (amount == null || amount == t.getAmount())) {
                 if(printHeader) {
                     printHeader=false;
+                    System.out.println("Displaying Entries With Applied Filters");
                     displayHeader();
                 }
                 found=true;
@@ -445,8 +446,6 @@ public class FinancialTracker {
         }
 
     }
-
-
     private static LocalDate parseDate(String s) {
         if (s.isEmpty()) {
             return null;
