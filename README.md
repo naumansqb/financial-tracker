@@ -37,17 +37,31 @@ Follow these steps to get your application running within IntelliJ IDEA:
 
 ## Technologies Used
 - Java: `openjdk 17.0.12 2024-07-16`
-- 
 ## Demo
-![HomeScreen](C:\Users\xnaum\Downloads\HomeScreen-ezgif.com-video-to-gif-converter.gif)
 
+### Home Screen - Main Menu Navigation
+*Adding deposits and payments to track financial transactions*
+
+![HomeScreen](HomeScreen-ezgif.com-video-to-gif-converter%20%281%29.gif)
+### Ledger Menu - View All Transactions
+*Displaying all entries, deposits only, and payments only*
+
+![LedgerScreen](LedgerScreen-ezgif.com-video-to-gif-converter.gif)
+
+### Reports Menu - Pre-defined Financial Reports
+*Viewing Date and Vendor Specific Reports*
+
+![ReportsScreen](ReportsScreen-ezgif.com-video-to-gif-converter.gif)
+### Custom Search - Flexible Filtering
+*Filtering transactions by user applied filters*
+
+![CustomScreen](CustomScreen-ezgif.com-video-to-gif-converter.gif)
 
 ## Future Work
-
-Outline potential future enhancements or functionalities you might consider adding:
-
-- 
-
+- **Transaction Categories/Tags**: Allow users to categorize transactions (e.g., Groceries, Utilities, Entertainment, Savings) for better insights.
+- **Batch Entry Mode**: Enable users to add multiple deposits or payments in succession without returning to the home screen after each entry.
+- **Running Balance Tracking**: Display a running balance that updates with each transaction, allowing users to see insights about balance throughout months/years.
+- **Total Values**: Show the total number of entries and amount (total deposited, total spent,etc..) for each report view to provide improved financial insights.
 ## Resources
 - [Java Date Examples](https://www.studytonight.com/java-examples/)
 - [Student Extra Resources Github](https://github.com/RayMaroun/students-extra-resources/blob/main/week3-payroll-tutorial.md)
